@@ -1,0 +1,206 @@
+swagger: "2.0"
+info:
+  description: "This is a sample service for testing generator"
+  version: "1.0.0"
+  title: "Test Sample Service"
+  contact:
+    email: "tomasz.rarok@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "tomaszrarok.pl"
+basePath: "/service"
+tags:
+- name: "sample"
+  description: "Every available sample"
+  externalDocs:
+    description: "Find out more"
+    url: "http://tomaszrarok.pl"
+schemes:
+- "https"
+- "http"
+paths:
+  /sample:
+    post:
+      tags:
+      - "sample"
+      summary: "Add a new sample to the database"
+      description: ""
+      operationId: "addSample"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Sample that needs to be added to the database"
+        required: true
+        schema:
+          $ref: "#/definitions/Sample"
+      responses:
+        405:
+          description: "Invalid input"
+    put:
+      tags:
+      - "sample"
+      summary: "Update an existing sample"
+      description: ""
+      operationId: "updateSample"
+      consumes:
+      - "application/json"
+      - "application/xml"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Sample that needs to be updated in the database"
+        required: true
+        schema:
+          $ref: "#/definitions/Sample"
+      responses:
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Sample not found"
+        405:
+          description: "Validation exception"
+  /sample/findByStatus:
+    get:
+      tags:
+      - "sample"
+      summary: "Finds sample by status"
+      description: "Multiple status values can be provided with comma separated strings"
+      operationId: "findSamplesByStatus"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "available"
+          - "pending"
+          - "sold"
+          default: "available"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Sample"
+        400:
+          description: "Invalid status value"
+  /sample/{sampleId}:
+    get:
+      tags:
+      - "sample"
+      summary: "Find sample by ID"
+      description: "Returns a single sample"
+      operationId: "getSampleById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "sampleId"
+        in: "path"
+        description: "ID of sample to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Sample"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Sample not found"
+    delete:
+      tags:
+      - "sample"
+      summary: "Deletes a sample"
+      description: ""
+      operationId: "deleteSample"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "sampleId"
+        in: "path"
+        description: "Sample id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Sample not found"
+definitions:
+  Measurement:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      value:
+        type: "string"
+    xml:
+      name: "Tag"
+  Sample:
+    type: "object"
+    required:
+    - "name"
+    - "photoUrls"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+        example: "doggie"
+      tags:
+        type: "array"
+        xml:
+          name: "tag"
+          wrapped: true
+        items:
+          $ref: "#/definitions/Measurement"
+      status:
+        type: "string"
+        description: "sample status in the database"
+        enum:
+        - "available"
+        - "pending"
+        - "sold"
+      timestamp:
+        type: "string"
+        format: "date-time"
+    xml:
+      name: "Sample"
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
